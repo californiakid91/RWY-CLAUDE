@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="RWY CLAUDE" />
+  <meta name="theme-color" content="#1a1f2e" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <title>RWY CLAUDE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #1a1f2e;
+      --bg2: #222840;
+      --bg3: #2a3050;
+      --card: #1e2438;
+      --border: #3a4060;
+      --accent: #4f9cf9;
+      --accent2: #7fc4fd;
+      --text: #e8edf8;
+      --text2: #9aa5c0;
+      --text3: #6b778f;
+      --warn: #f5a623;
+      --success: #5cb85c;
+      --danger: #e05c5c;
+      --mono: 'Share Tech Mono', monospace;
+      --sans: 'Barlow', sans-serif;
+      --cond: 'Barlow Condensed', sans-serif;
+      --radius: 10px;
+      --transition: 0.25s ease;
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f3fa;
+      --bg2: #e4e9f5;
+      --bg3: #d8dfef;
+      --card: #ffffff;
+      --border: #c5cedf;
+      --accent: #2563eb;
+      --accent2: #1d4ed8;
+      --text: #1a2040;
+      --text2: #4a5680;
+      --text3: #8090b0;
+      --warn: #d97706;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      transition: background var(--transition), color var(--transition);
+    }
+
+    /* ─── DISCLAIMER OVERLAY ─── */
+    #disclaimer-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(10,12,22,0.97);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      backdrop-filter: blur(8px);
+    }
+
+    .disclaimer-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--warn);
+      border-radius: var(--radius);
+      max-width: 480px;
+      width: 100%;
+      padding: 32px 28px 28px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+      animation: slideUp 0.4s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .disclaimer-icon {
+      font-size: 32px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .disclaimer-title {
+      font-family: var(--cond);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--warn);
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .disclaimer-app {
+      font-family: var(--cond);
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .disclaimer-text {
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text2);
+      text-align: center;
+      margin-bottom: 24px;
+      border: 1px solid rgba(245,166,35,0.25);
+      background: rgba(245,166,35,0.06);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .disclaimer-text strong {
+      color: var(--warn);
+      font-weight: 600;
+    }
+
+    .btn-accept {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 24px;
+      font-family: var(--cond);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .btn-accept:hover { background: var(--accent2); transform: translateY(-1px); }
+    .btn-accept:active { transform: translateY(0); }
+
+    /* ─── MAIN APP ─── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo-block {}
+
+    .logo-label {
+      font-family: var(--cond);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: var(--text3);
+      text-transform: uppercase;
+    }
+
+    .logo-name {
+      font-family: var(--cond);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .logo-name span {
+      color: var(--accent);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .theme-toggle {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-size: 14px;
+    }
+
+    .theme-toggle:hover { border-color: var(--accent); }
+
+    .theme-label {
+      font-family: var(--cond);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--text2);
+    }
+
+    /* ─── SEARCH SECTION ─── */
+    .search-section {
+      padding: 32px 0 16px;
+      flex: 1;
+    }
+
+    .search-heading {
+      font-family: var(--cond);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: var(--text3);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text3);
+      font-size: 16px;
+      pointer-events: none;
+      transition: color var(--transition);
+    }
+
+    #search-input {
+      width: 100%;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 48px 16px 42px;
+      font-family: var(--mono);
+      font-size: 16px;
+      color: var(--text);
+      outline: none;
+      transition: all var(--transition);
+      -webkit-appearance: none;
+    }
+
+    #search-input::placeholder { color: var(--text3); font-family: var(--sans); font-size: 14px; }
+    #search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,156,249,0.15); }
+
+    .clear-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text3);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+      display: none;
+      line-height: 1;
+    }
+
+    .clear-btn.visible { display: block; }
+
+    /* ─── SUGGESTIONS ─── */
+    #suggestions {
+      margin-top: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: none;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    #suggestions.visible { display: block; }
+
+    .suggestion-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+
+    .suggestion-item:last-child { border-bottom: none; }
+    .suggestion-item:hover, .suggestion-item.selected { background: var(--bg3); }
+
+    .suggestion-iata {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--accent);
+      min-width: 44px;
+    }
+
+    .suggestion-info { flex: 1; min-width: 0; }
+
+    .suggestion-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .suggestion-city {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 2px;
+    }
+
+    .suggestion-country {
+      font-family: var(--cond);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--text3);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+
+    /* ─── DIRECT CODE INPUT ─── */
+    .direct-section {
+      margin-top: 24px;
+    }
+
+    .direct-heading {
+      font-family: var(--cond);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: var(--text3);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .direct-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    #direct-input {
+      flex: 1;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-family: var(--mono);
+      font-size: 20px;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      color: var(--text);
+      outline: none;
+      transition: all var(--transition);
+      -webkit-appearance: none;
+    }
+
+    #direct-input::placeholder { font-size: 14px; letter-spacing: 1px; color: var(--text3); font-family: var(--sans); font-weight: 300; }
+    #direct-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,156,249,0.15); }
+
+    .btn-go {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      font-family: var(--cond);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-go:hover { background: var(--accent2); transform: translateY(-1px); }
+    .btn-go:active { transform: translateY(0); }
+
+    /* ─── URL PREVIEW ─── */
+    #url-preview {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text3);
+      display: none;
+      word-break: break-all;
+    }
+
+    #url-preview.visible { display: block; }
+    #url-preview span { color: var(--accent); }
+
+    /* ─── ERROR ─── */
+    .error-msg {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--danger);
+      font-weight: 500;
+      display: none;
+      padding: 0 4px;
+    }
+
+    .error-msg.visible { display: block; }
+
+    /* ─── INFO CARDS ─── */
+    .info-section {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .info-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .info-card-label {
+      font-family: var(--cond);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--text3);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .info-card-value {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    /* ─── FOOTER DISCLAIMER ─── */
+    footer {
+      position: sticky;
+      bottom: 0;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 10px 0;
+      margin: 0 -16px;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .footer-warn {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .footer-warn-icon {
+      font-size: 12px;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .footer-warn-text {
+      font-size: 10px;
+      line-height: 1.5;
+      color: var(--text3);
+      font-weight: 300;
+    }
+
+    .footer-warn-text strong {
+      color: var(--warn);
+      font-weight: 600;
+    }
+
+    /* ─── NO RESULTS ─── */
+    .no-results {
+      padding: 20px 16px;
+      text-align: center;
+      color: var(--text3);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── DISCLAIMER OVERLAY ─── -->
+<div id="disclaimer-overlay">
+  <div class="disclaimer-box">
+    <div class="disclaimer-icon">✈️</div>
+    <div class="disclaimer-title">⚠️ Important Notice</div>
+    <div class="disclaimer-app">RWY <span>CLAUDE</span></div>
+    <div class="disclaimer-text">
+      <strong>DISCLAIMER:</strong> This product and the information it provides is intended strictly for
+      <strong>recreational purposes only</strong> and is <strong>not approved for operational use</strong>.
+      Do not use this application for actual flight operations, navigation, or any safety-critical aviation activity.
+    </div>
+    <button class="btn-accept" onclick="acceptDisclaimer()">I UNDERSTAND &amp; ACCEPT</button>
+  </div>
+</div>
+
+<!-- ─── MAIN APP ─── -->
+<div id="app">
+  <header>
+    <div class="logo-block">
+      <div class="logo-label">Airport Finder</div>
+      <div class="logo-name">RWY <span>CLAUDE</span></div>
+    </div>
+    <div class="header-right">
+      <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">
+        <span id="theme-icon">☀️</span>
+        <span class="theme-label" id="theme-label">LIGHT</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="search-section">
+    <!-- SEARCH BY NAME/CITY -->
+    <div class="search-heading">🔍 Search by airport or city</div>
+    <div class="search-wrapper">
+      <span class="search-icon">✈</span>
+      <input
+        type="text"
+        id="search-input"
+        placeholder="e.g. Palma, Madrid, Casablanca..."
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        oninput="onSearch(this.value)"
+        onkeydown="onSearchKey(event)"
+      />
+      <button class="clear-btn" id="clear-btn" onclick="clearSearch()">✕</button>
+    </div>
+    <div id="suggestions" role="listbox"></div>
+
+    <!-- DIRECT IATA CODE -->
+    <div class="direct-section">
+      <div class="direct-heading">⚡ Direct IATA / ICAO code</div>
+      <div class="direct-row">
+        <input
+          type="text"
+          id="direct-input"
+          placeholder="PMI or LEPA"
+          maxlength="4"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="characters"
+          spellcheck="false"
+          oninput="onDirectInput(this.value)"
+          onkeydown="onDirectKey(event)"
+        />
+        <button class="btn-go" onclick="goDirectCode()">
+          GO ↗
+        </button>
+      </div>
+      <div id="url-preview"></div>
+      <div class="error-msg" id="error-msg">Airport not found. Check the code and try again.</div>
+    </div>
+
+    <!-- INFO CARDS -->
+    <div class="info-section">
+      <div class="info-card">
+        <div class="info-card-label">Coverage</div>
+        <div class="info-card-value">Europe + Morocco</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Airports</div>
+        <div class="info-card-value" id="airport-count">—</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Data Source</div>
+        <div class="info-card-value">FlightRadar24</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Opens in</div>
+        <div class="info-card-value">New tab</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-warn">
+      <span class="footer-warn-icon">⚠️</span>
+      <span class="footer-warn-text">
+        <strong>DISCLAIMER:</strong> This product/information is intended strictly for
+        <strong>recreational purposes only</strong> and is not approved for operational use.
+      </span>
+    </div>
+  </footer>
+</div>
+
+<script>
+// ─── AIRPORT DATABASE: Europe + Morocco ───
+const AIRPORTS = [
+  // SPAIN
+  { iata:"MAD", icao:"LEMD", name:"Adolfo Suárez Madrid–Barajas Airport", city:"Madrid", country:"Spain" },
+  { iata:"BCN", icao:"LEBL", name:"Josep Tarradellas Barcelona–El Prat Airport", city:"Barcelona", country:"Spain" },
+  { iata:"PMI", icao:"LEPA", name:"Palma de Mallorca Airport", city:"Palma de Mallorca", country:"Spain" },
+  { iata:"AGP", icao:"LEMG", name:"Málaga–Costa del Sol Airport", city:"Málaga", country:"Spain" },
+  { iata:"ALC", icao:"LEAL", name:"Alicante–Elche Miguel Hernández Airport", city:"Alicante", country:"Spain" },
+  { iata:"VLC", icao:"LEVC", name:"Valencia Airport", city:"Valencia", country:"Spain" },
+  { iata:"SVQ", icao:"LEZL", name:"Seville Airport", city:"Seville", country:"Spain" },
+  { iata:"BIO", icao:"LEBB", name:"Bilbao Airport", city:"Bilbao", country:"Spain" },
+  { iata:"TFN", icao:"GCXO", name:"Tenerife North–Ciudad de La Laguna Airport", city:"Tenerife", country:"Spain" },
+  { iata:"TFS", icao:"GCTS", name:"Tenerife South Airport", city:"Tenerife", country:"Spain" },
+  { iata:"LPA", icao:"GCLP", name:"Gran Canaria Airport", city:"Las Palmas", country:"Spain" },
+  { iata:"ACE", icao:"GCRR", name:"Lanzarote–César Manrique Airport", city:"Lanzarote", country:"Spain" },
+  { iata:"FUE", icao:"GCFV", name:"Fuerteventura Airport", city:"Fuerteventura", country:"Spain" },
+  { iata:"IBZ", icao:"LEIB", name:"Ibiza Airport", city:"Ibiza", country:"Spain" },
+  { iata:"MAH", icao:"LEMH", name:"Menorca Airport", city:"Mahón", country:"Spain" },
+  { iata:"GRX", icao:"LEGR", name:"Federico García Lorca Granada–Jaén Airport", city:"Granada", country:"Spain" },
+  { iata:"SDR", icao:"LEXJ", name:"Santander Airport", city:"Santander", country:"Spain" },
+  { iata:"VGO", icao:"LEVX", name:"Vigo–Peinador Airport", city:"Vigo", country:"Spain" },
+  { iata:"SCQ", icao:"LEST", name:"Santiago de Compostela Airport", city:"Santiago de Compostela", country:"Spain" },
+  { iata:"OVD", icao:"LEAS", name:"Asturias Airport", city:"Oviedo", country:"Spain" },
+  { iata:"ZAZ", icao:"LEZG", name:"Zaragoza Airport", city:"Zaragoza", country:"Spain" },
+  { iata:"MJV", icao:"LELC", name:"Murcia–San Javier Airport", city:"Murcia", country:"Spain" },
+  { iata:"RMU", icao:"LEMI", name:"Región de Murcia International Airport", city:"Murcia", country:"Spain" },
+  { iata:"XRY", icao:"LEJR", name:"Jerez Airport", city:"Jerez de la Frontera", country:"Spain" },
+  { iata:"SPC", icao:"GCLA", name:"La Palma Airport", city:"Santa Cruz de La Palma", country:"Spain" },
+  { iata:"GMZ", icao:"GCGM", name:"La Gomera Airport", city:"San Sebastián de la Gomera", country:"Spain" },
+  { iata:"VDE", icao:"GCHI", name:"El Hierro Airport", city:"Valverde", country:"Spain" },
+  { iata:"MLN", icao:"GEML", name:"Melilla Airport", city:"Melilla", country:"Spain" },
+  { iata:"LEI", icao:"LEAM", name:"Almería Airport", city:"Almería", country:"Spain" },
+  { iata:"VLL", icao:"LEVD", name:"Valladolid Airport", city:"Valladolid", country:"Spain" },
+  { iata:"RJL", icao:"LELO", name:"Logroño–Agoncillo Airport", city:"Logroño", country:"Spain" },
+  { iata:"PNA", icao:"LEPP", name:"Pamplona Airport", city:"Pamplona", country:"Spain" },
+  { iata:"EAS", icao:"LESO", name:"San Sebastián Airport", city:"San Sebastián", country:"Spain" },
+  { iata:"BJZ", icao:"LEBZ", name:"Badajoz Airport", city:"Badajoz", country:"Spain" },
+  { iata:"CQM", icao:"LERL", name:"Ciudad Real Airport", city:"Ciudad Real", country:"Spain" },
+
+  // PORTUGAL
+  { iata:"LIS", icao:"LPPT", name:"Humberto Delgado Airport (Lisbon)", city:"Lisbon", country:"Portugal" },
+  { iata:"OPO", icao:"LPPR", name:"Francisco de Sá Carneiro Airport", city:"Porto", country:"Portugal" },
+  { iata:"FAO", icao:"LPFR", name:"Faro Airport", city:"Faro", country:"Portugal" },
+  { iata:"FNC", icao:"LPMA", name:"Madeira Airport", city:"Funchal", country:"Portugal" },
+  { iata:"PDL", icao:"LPPD", name:"João Paulo II Airport", city:"Ponta Delgada", country:"Portugal" },
+  { iata:"TER", icao:"LPLA", name:"Lajes Airport", city:"Terceira", country:"Portugal" },
+  { iata:"PIX", icao:"LPPI", name:"Pico Airport", city:"Pico", country:"Portugal" },
+  { iata:"SJZ", icao:"LPSJ", name:"São Jorge Airport", city:"São Jorge", country:"Portugal" },
+  { iata:"BGC", icao:"LPBG", name:"Bragança Airport", city:"Bragança", country:"Portugal" },
+  { iata:"CHC", icao:"LPCO", name:"Covilhã Airport", city:"Covilhã", country:"Portugal" },
+  { iata:"CVU", icao:"LPCR", name:"Corvo Airport", city:"Corvo", country:"Portugal" },
+  { iata:"FLW", icao:"LPFL", name:"Flores Airport", city:"Flores", country:"Portugal" },
+  { iata:"GRW", icao:"LPGR", name:"Graciosa Airport", city:"Graciosa", country:"Portugal" },
+  { iata:"HOR", icao:"LPHR", name:"Horta Airport", city:"Horta", country:"Portugal" },
+  { iata:"SMA", icao:"LPAZ", name:"Santa Maria Airport", city:"Santa Maria", country:"Portugal" },
+
+  // FRANCE
+  { iata:"CDG", icao:"LFPG", name:"Charles de Gaulle Airport", city:"Paris", country:"France" },
+  { iata:"ORY", icao:"LFPO", name:"Paris Orly Airport", city:"Paris", country:"France" },
+  { iata:"NCE", icao:"LFMN", name:"Nice Côte d'Azur Airport", city:"Nice", country:"France" },
+  { iata:"LYS", icao:"LFLL", name:"Lyon–Saint-Exupéry Airport", city:"Lyon", country:"France" },
+  { iata:"MRS", icao:"LFML", name:"Marseille Provence Airport", city:"Marseille", country:"France" },
+  { iata:"TLS", icao:"LFBO", name:"Toulouse–Blagnac Airport", city:"Toulouse", country:"France" },
+  { iata:"BOD", icao:"LFBD", name:"Bordeaux–Mérignac Airport", city:"Bordeaux", country:"France" },
+  { iata:"NTE", icao:"LFRS", name:"Nantes Atlantique Airport", city:"Nantes", country:"France" },
+  { iata:"SXB", icao:"LFST", name:"Strasbourg Airport", city:"Strasbourg", country:"France" },
+  { iata:"LIL", icao:"LFQQ", name:"Lille Airport", city:"Lille", country:"France" },
+  { iata:"BIQ", icao:"LFBZ", name:"Biarritz Pays Basque Airport", city:"Biarritz", country:"France" },
+  { iata:"MPL", icao:"LFMT", name:"Montpellier–Méditerranée Airport", city:"Montpellier", country:"France" },
+  { iata:"RNS", icao:"LFRN", name:"Rennes–Saint-Jacques Airport", city:"Rennes", country:"France" },
+  { iata:"GNB", icao:"LFLS", name:"Grenoble–Isère Airport", city:"Grenoble", country:"France" },
+  { iata:"CLY", icao:"LFKC", name:"Calvi–Sainte-Catherine Airport", city:"Calvi", country:"France" },
+  { iata:"AJA", icao:"LFKJ", name:"Ajaccio Napoleon Bonaparte Airport", city:"Ajaccio", country:"France" },
+  { iata:"FSC", icao:"LFKS", name:"Figari–Sud Corse Airport", city:"Figari", country:"France" },
+  { iata:"BIA", icao:"LFKB", name:"Bastia–Poretta Airport", city:"Bastia", country:"France" },
+  { iata:"PUF", icao:"LFBP", name:"Pau Pyrénées Airport", city:"Pau", country:"France" },
+  { iata:"CFR", icao:"LFRK", name:"Caen–Carpiquet Airport", city:"Caen", country:"France" },
+  { iata:"LRH", icao:"LFBH", name:"La Rochelle – Île de Ré Airport", city:"La Rochelle", country:"France" },
+  { iata:"LIG", icao:"LFBL", name:"Limoges – Bellegarde Airport", city:"Limoges", country:"France" },
+  { iata:"ETZ", icao:"LFJL", name:"Metz–Nancy–Lorraine Airport", city:"Metz", country:"France" },
+
+  // UNITED KINGDOM
+  { iata:"LHR", icao:"EGLL", name:"Heathrow Airport", city:"London", country:"United Kingdom" },
+  { iata:"LGW", icao:"EGKK", name:"Gatwick Airport", city:"London", country:"United Kingdom" },
+  { iata:"STN", icao:"EGSS", name:"London Stansted Airport", city:"London", country:"United Kingdom" },
+  { iata:"LTN", icao:"EGGW", name:"London Luton Airport", city:"London", country:"United Kingdom" },
+  { iata:"LCY", icao:"EGLC", name:"London City Airport", city:"London", country:"United Kingdom" },
+  { iata:"MAN", icao:"EGCC", name:"Manchester Airport", city:"Manchester", country:"United Kingdom" },
+  { iata:"BHX", icao:"EGBB", name:"Birmingham Airport", city:"Birmingham", country:"United Kingdom" },
+  { iata:"EDI", icao:"EGPH", name:"Edinburgh Airport", city:"Edinburgh", country:"United Kingdom" },
+  { iata:"GLA", icao:"EGPF", name:"Glasgow Airport", city:"Glasgow", country:"United Kingdom" },
+  { iata:"BRS", icao:"EGGD", name:"Bristol Airport", city:"Bristol", country:"United Kingdom" },
+  { iata:"NCL", icao:"EGNT", name:"Newcastle International Airport", city:"Newcastle", country:"United Kingdom" },
+  { iata:"LBA", icao:"EGNM", name:"Leeds Bradford Airport", city:"Leeds", country:"United Kingdom" },
+  { iata:"EMA", icao:"EGNX", name:"East Midlands Airport", city:"Nottingham", country:"United Kingdom" },
+  { iata:"SOU", icao:"EGHI", name:"Southampton Airport", city:"Southampton", country:"United Kingdom" },
+  { iata:"ABZ", icao:"EGPD", name:"Aberdeen Airport", city:"Aberdeen", country:"United Kingdom" },
+  { iata:"BFS", icao:"EGAA", name:"Belfast International Airport", city:"Belfast", country:"United Kingdom" },
+  { iata:"BHD", icao:"EGAC", name:"George Best Belfast City Airport", city:"Belfast", country:"United Kingdom" },
+  { iata:"INV", icao:"EGPE", name:"Inverness Airport", city:"Inverness", country:"United Kingdom" },
+  { iata:"DSA", icao:"EGCN", name:"Doncaster Sheffield Airport", city:"Doncaster", country:"United Kingdom" },
+  { iata:"CWL", icao:"EGFF", name:"Cardiff Airport", city:"Cardiff", country:"United Kingdom" },
+  { iata:"HUY", icao:"EGNJ", name:"Humberside Airport", city:"Humberside", country:"United Kingdom" },
+  { iata:"MME", icao:"TEES", name:"Durham Tees Valley Airport", city:"Durham", country:"United Kingdom" },
+  { iata:"NQY", icao:"EGHQ", name:"Cornwall Airport Newquay", city:"Newquay", country:"United Kingdom" },
+  { iata:"EXT", icao:"EGTE", name:"Exeter Airport", city:"Exeter", country:"United Kingdom" },
+
+  // GERMANY
+  { iata:"FRA", icao:"EDDF", name:"Frankfurt Airport", city:"Frankfurt", country:"Germany" },
+  { iata:"MUC", icao:"EDDM", name:"Munich Airport", city:"Munich", country:"Germany" },
+  { iata:"BER", icao:"EDDB", name:"Berlin Brandenburg Airport", city:"Berlin", country:"Germany" },
+  { iata:"DUS", icao:"EDDL", name:"Düsseldorf Airport", city:"Düsseldorf", country:"Germany" },
+  { iata:"HAM", icao:"EDDH", name:"Hamburg Airport", city:"Hamburg", country:"Germany" },
+  { iata:"CGN", icao:"EDDK", name:"Cologne Bonn Airport", city:"Cologne", country:"Germany" },
+  { iata:"STR", icao:"EDDS", name:"Stuttgart Airport", city:"Stuttgart", country:"Germany" },
+  { iata:"NUE", icao:"EDDN", name:"Nuremberg Airport", city:"Nuremberg", country:"Germany" },
+  { iata:"HAJ", icao:"EDDV", name:"Hannover Airport", city:"Hannover", country:"Germany" },
+  { iata:"LEJ", icao:"EDDP", name:"Leipzig/Halle Airport", city:"Leipzig", country:"Germany" },
+  { iata:"DTM", icao:"EDLW", name:"Dortmund Airport", city:"Dortmund", country:"Germany" },
+  { iata:"FDH", icao:"EDNY", name:"Friedrichshafen Airport", city:"Friedrichshafen", country:"Germany" },
+  { iata:"SCN", icao:"EDDR", name:"Saarbrücken Airport", city:"Saarbrücken", country:"Germany" },
+  { iata:"BRE", icao:"EDDW", name:"Bremen Airport", city:"Bremen", country:"Germany" },
+  { iata:"FKB", icao:"EDSB", name:"Karlsruhe Baden-Baden Airport", city:"Baden-Baden", country:"Germany" },
+  { iata:"ERF", icao:"EDDE", name:"Erfurt–Weimar Airport", city:"Erfurt", country:"Germany" },
+  { iata:"RLG", icao:"ETNL", name:"Rostock–Laage Airport", city:"Rostock", country:"Germany" },
+
+  // ITALY
+  { iata:"FCO", icao:"LIRF", name:"Leonardo da Vinci–Fiumicino Airport", city:"Rome", country:"Italy" },
+  { iata:"MXP", icao:"LIMC", name:"Milan Malpensa Airport", city:"Milan", country:"Italy" },
+  { iata:"LIN", icao:"LIML", name:"Milan Linate Airport", city:"Milan", country:"Italy" },
+  { iata:"BGY", icao:"LIME", name:"Il Caravaggio International Airport (Bergamo)", city:"Bergamo", country:"Italy" },
+  { iata:"VCE", icao:"LIPZ", name:"Venice Marco Polo Airport", city:"Venice", country:"Italy" },
+  { iata:"NAP", icao:"LIRN", name:"Naples International Airport", city:"Naples", country:"Italy" },
+  { iata:"CTA", icao:"LICC", name:"Catania–Fontanarossa Airport", city:"Catania", country:"Italy" },
+  { iata:"PMO", icao:"LICJ", name:"Falcone–Borsellino Airport (Palermo)", city:"Palermo", country:"Italy" },
+  { iata:"BLQ", icao:"LIPE", name:"Bologna Guglielmo Marconi Airport", city:"Bologna", country:"Italy" },
+  { iata:"TRN", icao:"LIMF", name:"Turin Airport", city:"Turin", country:"Italy" },
+  { iata:"PSA", icao:"LIRP", name:"Galileo Galilei Airport (Pisa)", city:"Pisa", country:"Italy" },
+  { iata:"FLR", icao:"LIRQ", name:"Florence Airport", city:"Florence", country:"Italy" },
+  { iata:"GOA", icao:"LIMJ", name:"Genoa Cristoforo Colombo Airport", city:"Genoa", country:"Italy" },
+  { iata:"CAG", icao:"LIEE", name:"Cagliari Elmas Airport", city:"Cagliari", country:"Italy" },
+  { iata:"AHO", icao:"LIEA", name:"Alghero Airport", city:"Alghero", country:"Italy" },
+  { iata:"OLB", icao:"LIEO", name:"Olbia Costa Smeralda Airport", city:"Olbia", country:"Italy" },
+  { iata:"BRI", icao:"LIBD", name:"Bari Karol Wojtyła Airport", city:"Bari", country:"Italy" },
+  { iata:"REG", icao:"LICR", name:"Reggio Calabria Airport", city:"Reggio Calabria", country:"Italy" },
+  { iata:"VRN", icao:"LIPX", name:"Verona Villafranca Airport", city:"Verona", country:"Italy" },
+  { iata:"TSF", icao:"LIPH", name:"Treviso Airport", city:"Treviso", country:"Italy" },
+  { iata:"TRS", icao:"LIPQ", name:"Trieste–Friuli Venezia Giulia Airport", city:"Trieste", country:"Italy" },
+  { iata:"AOI", icao:"LIPY", name:"Ancona Falconara Airport", city:"Ancona", country:"Italy" },
+  { iata:"CIY", icao:"LICB", name:"Comiso Airport", city:"Comiso", country:"Italy" },
+  { iata:"BDS", icao:"LIBR", name:"Brindisi Airport", city:"Brindisi", country:"Italy" },
+  { iata:"SUF", icao:"LICA", name:"Lamezia Terme International Airport", city:"Lamezia Terme", country:"Italy" },
+  { iata:"PSR", icao:"LIBP", name:"Pescara International Airport", city:"Pescara", country:"Italy" },
+  { iata:"CIA", icao:"LIRA", name:"Rome Ciampino Airport", city:"Rome", country:"Italy" },
+
+  // NETHERLANDS
+  { iata:"AMS", icao:"EHAM", name:"Amsterdam Airport Schiphol", city:"Amsterdam", country:"Netherlands" },
+  { iata:"EIN", icao:"EHEH", name:"Eindhoven Airport", city:"Eindhoven", country:"Netherlands" },
+  { iata:"RTM", icao:"EHRD", name:"Rotterdam The Hague Airport", city:"Rotterdam", country:"Netherlands" },
+  { iata:"MST", icao:"EHBK", name:"Maastricht Aachen Airport", city:"Maastricht", country:"Netherlands" },
+  { iata:"GRQ", icao:"EHGG", name:"Groningen Airport Eelde", city:"Groningen", country:"Netherlands" },
+
+  // BELGIUM
+  { iata:"BRU", icao:"EBBR", name:"Brussels Airport", city:"Brussels", country:"Belgium" },
+  { iata:"CRL", icao:"EBCI", name:"Brussels South Charleroi Airport", city:"Charleroi", country:"Belgium" },
+  { iata:"LGG", icao:"EBLG", name:"Liège Airport", city:"Liège", country:"Belgium" },
+  { iata:"OST", icao:"EBOS", name:"Ostend–Bruges International Airport", city:"Ostend", country:"Belgium" },
+
+  // SWITZERLAND
+  { iata:"ZRH", icao:"LSZH", name:"Zurich Airport", city:"Zurich", country:"Switzerland" },
+  { iata:"GVA", icao:"LSGG", name:"Geneva Airport", city:"Geneva", country:"Switzerland" },
+  { iata:"BSL", icao:"LFSB", name:"EuroAirport Basel Mulhouse Freiburg", city:"Basel", country:"Switzerland" },
+  { iata:"BRN", icao:"LSZB", name:"Bern Airport", city:"Bern", country:"Switzerland" },
+
+  // AUSTRIA
+  { iata:"VIE", icao:"LOWW", name:"Vienna International Airport", city:"Vienna", country:"Austria" },
+  { iata:"SZG", icao:"LOWS", name:"Salzburg Airport", city:"Salzburg", country:"Austria" },
+  { iata:"INN", icao:"LOWI", name:"Innsbruck Airport", city:"Innsbruck", country:"Austria" },
+  { iata:"GRZ", icao:"LOWG", name:"Graz Airport", city:"Graz", country:"Austria" },
+  { iata:"LNZ", icao:"LOWL", name:"Linz Airport", city:"Linz", country:"Austria" },
+
+  // GREECE
+  { iata:"ATH", icao:"LGAV", name:"Athens International Airport Eleftherios Venizelos", city:"Athens", country:"Greece" },
+  { iata:"SKG", icao:"LGTS", name:"Thessaloniki Airport Macedonia", city:"Thessaloniki", country:"Greece" },
+  { iata:"HER", icao:"LGIR", name:"Heraklion International Airport Nikos Kazantzakis", city:"Heraklion", country:"Greece" },
+  { iata:"RHO", icao:"LGRP", name:"Rhodes Diagoras International Airport", city:"Rhodes", country:"Greece" },
+  { iata:"KGS", icao:"LGKO", name:"Kos Island International Airport", city:"Kos", country:"Greece" },
+  { iata:"CFU", icao:"LGKR", name:"Corfu International Airport Ioannis Kapodistrias", city:"Corfu", country:"Greece" },
+  { iata:"ZTH", icao:"LGZA", name:"Zakynthos International Airport Dionysios Solomos", city:"Zakynthos", country:"Greece" },
+  { iata:"MJT", icao:"LGMT", name:"Mytilene International Airport", city:"Mytilene", country:"Greece" },
+  { iata:"SMI", icao:"LGSM", name:"Samos International Airport", city:"Samos", country:"Greece" },
+  { iata:"JMK", icao:"LGMK", name:"Mykonos Island National Airport", city:"Mykonos", country:"Greece" },
+  { iata:"JSI", icao:"LGSK", name:"Skiathos Island National Airport", city:"Skiathos", country:"Greece" },
+  { iata:"PVK", icao:"LGPZ", name:"Aktion National Airport", city:"Preveza", country:"Greece" },
+  { iata:"KLX", icao:"LGKL", name:"Kalamata International Airport", city:"Kalamata", country:"Greece" },
+  { iata:"JTR", icao:"LGSR", name:"Santorini (Thira) National Airport", city:"Santorini", country:"Greece" },
+  { iata:"JNB", icao:"LGNX", name:"Naxos Island National Airport", city:"Naxos", country:"Greece" },
+  { iata:"CHQ", icao:"LGSA", name:"Chania International Airport Ioannis Daskalogiannis", city:"Chania", country:"Greece" },
+  { iata:"AOK", icao:"LGKP", name:"Karpathos Island National Airport", city:"Karpathos", country:"Greece" },
+  { iata:"EFL", icao:"LGKF", name:"Cephalonia International Airport", city:"Cephalonia", country:"Greece" },
+
+  // TURKEY
+  { iata:"IST", icao:"LTFM", name:"Istanbul Airport", city:"Istanbul", country:"Turkey" },
+  { iata:"SAW", icao:"LTFJ", name:"Istanbul Sabiha Gökçen International Airport", city:"Istanbul", country:"Turkey" },
+  { iata:"AYT", icao:"LTAI", name:"Antalya Airport", city:"Antalya", country:"Turkey" },
+  { iata:"ADB", icao:"LTBJ", name:"Izmir Adnan Menderes Airport", city:"Izmir", country:"Turkey" },
+  { iata:"ESB", icao:"LTAC", name:"Ankara Esenboğa Airport", city:"Ankara", country:"Turkey" },
+  { iata:"BJV", icao:"LTFE", name:"Milas–Bodrum Airport", city:"Bodrum", country:"Turkey" },
+  { iata:"DLM", icao:"LTBS", name:"Dalaman Airport", city:"Dalaman", country:"Turkey" },
+  { iata:"GZP", icao:"LTFG", name:"Alanya Gazipaşa Airport", city:"Alanya", country:"Turkey" },
+
+  // SCANDINAVIA
+  { iata:"CPH", icao:"EKCH", name:"Copenhagen Airport", city:"Copenhagen", country:"Denmark" },
+  { iata:"BLL", icao:"EKBI", name:"Billund Airport", city:"Billund", country:"Denmark" },
+  { iata:"AAL", icao:"EKYT", name:"Aalborg Airport", city:"Aalborg", country:"Denmark" },
+  { iata:"ARN", icao:"ESSA", name:"Stockholm Arlanda Airport", city:"Stockholm", country:"Sweden" },
+  { iata:"GOT", icao:"ESGG", name:"Göteborg Landvetter Airport", city:"Göteborg", country:"Sweden" },
+  { iata:"MMX", icao:"ESMS", name:"Malmö Airport", city:"Malmö", country:"Sweden" },
+  { iata:"OSL", icao:"ENGM", name:"Oslo Gardermoen Airport", city:"Oslo", country:"Norway" },
+  { iata:"BGO", icao:"ENBR", name:"Bergen Airport Flesland", city:"Bergen", country:"Norway" },
+  { iata:"TRD", icao:"ENVA", name:"Trondheim Airport Værnes", city:"Trondheim", country:"Norway" },
+  { iata:"HEL", icao:"EFHK", name:"Helsinki–Vantaa Airport", city:"Helsinki", country:"Finland" },
+  { iata:"TMP", icao:"EFTP", name:"Tampere–Pirkkala Airport", city:"Tampere", country:"Finland" },
+  { iata:"TKU", icao:"EFTU", name:"Turku Airport", city:"Turku", country:"Finland" },
+  { iata:"KEF", icao:"BIKF", name:"Keflavik International Airport", city:"Reykjavik", country:"Iceland" },
+  { iata:"REK", icao:"BIRK", name:"Reykjavik Airport", city:"Reykjavik", country:"Iceland" },
+
+  // EASTERN EUROPE
+  { iata:"WAW", icao:"EPWA", name:"Warsaw Chopin Airport", city:"Warsaw", country:"Poland" },
+  { iata:"KRK", icao:"EPKK", name:"Kraków John Paul II International Airport", city:"Kraków", country:"Poland" },
+  { iata:"GDN", icao:"EPGD", name:"Gdańsk Lech Wałęsa Airport", city:"Gdańsk", country:"Poland" },
+  { iata:"PRG", icao:"LKPR", name:"Václav Havel Airport Prague", city:"Prague", country:"Czech Republic" },
+  { iata:"BTS", icao:"LZIB", name:"Bratislava Airport", city:"Bratislava", country:"Slovakia" },
+  { iata:"BUD", icao:"LHBP", name:"Budapest Ferenc Liszt International Airport", city:"Budapest", country:"Hungary" },
+  { iata:"OTP", icao:"LROP", name:"Henri Coandă International Airport (Bucharest)", city:"Bucharest", country:"Romania" },
+  { iata:"CLJ", icao:"LRCL", name:"Cluj-Napoca International Airport", city:"Cluj-Napoca", country:"Romania" },
+  { iata:"SOF", icao:"LBSF", name:"Sofia Airport", city:"Sofia", country:"Bulgaria" },
+  { iata:"VAR", icao:"LBWN", name:"Varna Airport", city:"Varna", country:"Bulgaria" },
+  { iata:"BOJ", icao:"LBBG", name:"Burgas Airport", city:"Burgas", country:"Bulgaria" },
+  { iata:"ZAG", icao:"LDZA", name:"Zagreb Airport", city:"Zagreb", country:"Croatia" },
+  { iata:"SPU", icao:"LDSP", name:"Split Airport", city:"Split", country:"Croatia" },
+  { iata:"DBV", icao:"LDDU", name:"Dubrovnik Airport", city:"Dubrovnik", country:"Croatia" },
+  { iata:"LJU", icao:"LJLJ", name:"Ljubljana Jože Pučnik Airport", city:"Ljubljana", country:"Slovenia" },
+  { iata:"BEG", icao:"LYBE", name:"Belgrade Nikola Tesla Airport", city:"Belgrade", country:"Serbia" },
+  { iata:"SKP", icao:"LWSK", name:"Skopje International Airport", city:"Skopje", country:"North Macedonia" },
+  { iata:"TIA", icao:"LATI", name:"Tirana International Airport Nënë Tereza", city:"Tirana", country:"Albania" },
+  { iata:"POD", icao:"LGPD", name:"Podgorica Airport", city:"Podgorica", country:"Montenegro" },
+  { iata:"TGD", icao:"LYPG", name:"Podgorica Airport", city:"Podgorica", country:"Montenegro" },
+  { iata:"SJJ", icao:"LQSA", name:"Sarajevo International Airport", city:"Sarajevo", country:"Bosnia and Herzegovina" },
+  { iata:"RIX", icao:"EVRA", name:"Riga International Airport", city:"Riga", country:"Latvia" },
+  { iata:"TLL", icao:"EETN", name:"Lennart Meri Tallinn Airport", city:"Tallinn", country:"Estonia" },
+  { iata:"VNO", icao:"EYVI", name:"Vilnius Airport", city:"Vilnius", country:"Lithuania" },
+  { iata:"KIV", icao:"LUKK", name:"Chișinău International Airport", city:"Chișinău", country:"Moldova" },
+  { iata:"KBP", icao:"UKBB", name:"Boryspil International Airport (Kyiv)", city:"Kyiv", country:"Ukraine" },
+  { iata:"IEV", icao:"UKKK", name:"Kyiv International Airport Zhuliany", city:"Kyiv", country:"Ukraine" },
+
+  // IRELAND
+  { iata:"DUB", icao:"EIDW", name:"Dublin Airport", city:"Dublin", country:"Ireland" },
+  { iata:"ORK", icao:"EICK", name:"Cork Airport", city:"Cork", country:"Ireland" },
+  { iata:"SNN", icao:"EINN", name:"Shannon Airport", city:"Shannon", country:"Ireland" },
+  { iata:"KIR", icao:"EIKY", name:"Kerry Airport", city:"Kerry", country:"Ireland" },
+  { iata:"NOC", icao:"EIKN", name:"Ireland West Airport Knock", city:"Knock", country:"Ireland" },
+
+  // LUXEMBOURG / MALTA / CYPRUS
+  { iata:"LUX", icao:"ELLX", name:"Luxembourg Airport", city:"Luxembourg City", country:"Luxembourg" },
+  { iata:"MLA", icao:"LMML", name:"Malta International Airport", city:"Valletta", country:"Malta" },
+  { iata:"LCA", icao:"LCLK", name:"Larnaca International Airport", city:"Larnaca", country:"Cyprus" },
+  { iata:"PFO", icao:"LCPH", name:"Paphos International Airport", city:"Paphos", country:"Cyprus" },
+
+  // MOROCCO
+  { iata:"CMN", icao:"GMMN", name:"Mohammed V International Airport", city:"Casablanca", country:"Morocco" },
+  { iata:"RAK", icao:"GMMX", name:"Marrakech Menara Airport", city:"Marrakech", country:"Morocco" },
+  { iata:"AGA", icao:"GMAD", name:"Agadir–Al Massira Airport", city:"Agadir", country:"Morocco" },
+  { iata:"FEZ", icao:"GMFF", name:"Fès–Saïss Airport", city:"Fès", country:"Morocco" },
+  { iata:"TNG", icao:"GMTT", name:"Ibn Batouta International Airport", city:"Tangier", country:"Morocco" },
+  { iata:"OUD", icao:"GMFO", name:"Angads Airport", city:"Oujda", country:"Morocco" },
+  { iata:"NDR", icao:"GMMW", name:"Nador International Airport", city:"Nador", country:"Morocco" },
+  { iata:"ESU", icao:"GMMI", name:"Essaouira–Mogador Airport", city:"Essaouira", country:"Morocco" },
+  { iata:"SMW", icao:"GMMA", name:"Smara Airport", city:"Smara", country:"Morocco" },
+  { iata:"ERH", icao:"GMFK", name:"Errachidia Airport", city:"Errachidia", country:"Morocco" },
+  { iata:"VIL", icao:"GMDH", name:"Dakhla Airport", city:"Dakhla", country:"Morocco" },
+  { iata:"EUN", icao:"GMML", name:"Hassan I Airport", city:"Laâyoune", country:"Morocco" },
+  { iata:"TTU", icao:"GMTN", name:"Saniat Rmel Airport", city:"Tétouan", country:"Morocco" },
+
+  // EXTRA: RUSSIA (European part) / GEORGIA / ARMENIA
+  { iata:"SVO", icao:"UUEE", name:"Sheremetyevo International Airport", city:"Moscow", country:"Russia" },
+  { iata:"DME", icao:"UUDD", name:"Domodedovo International Airport", city:"Moscow", country:"Russia" },
+  { iata:"LED", icao:"ULLI", name:"Pulkovo Airport", city:"Saint Petersburg", country:"Russia" },
+  { iata:"TBS", icao:"UGTB", name:"Tbilisi International Airport", city:"Tbilisi", country:"Georgia" },
+  { iata:"EVN", icao:"UDYZ", name:"Zvartnots International Airport", city:"Yerevan", country:"Armenia" },
+];
+
+// ─── APP STATE ───
+let selectedIndex = -1;
+let currentSuggestions = [];
+let darkMode = true;
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('airport-count').textContent = AIRPORTS.length + ' airports';
+  applySavedTheme();
+  registerSW();
+});
+
+function registerSW() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+}
+
+// ─── DISCLAIMER ───
+function acceptDisclaimer() {
+  document.getElementById('disclaimer-overlay').style.opacity = '0';
+  document.getElementById('disclaimer-overlay').style.transition = 'opacity 0.3s ease';
+  setTimeout(() => {
+    document.getElementById('disclaimer-overlay').style.display = 'none';
+  }, 300);
+}
+
+// ─── THEME ───
+function applySavedTheme() {
+  const saved = localStorage.getItem('rwy-theme');
+  if (saved === 'light') {
+    setTheme('light');
+  } else {
+    setTheme('dark');
+  }
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  setTheme(current === 'light' ? 'dark' : 'light');
+}
+
+function setTheme(mode) {
+  if (mode === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.getElementById('theme-icon').textContent = '🌙';
+    document.getElementById('theme-label').textContent = 'DARK';
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f0f3fa');
+    localStorage.setItem('rwy-theme', 'light');
+    darkMode = false;
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    document.getElementById('theme-icon').textContent = '☀️';
+    document.getElementById('theme-label').textContent = 'LIGHT';
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1a1f2e');
+    localStorage.setItem('rwy-theme', 'dark');
+    darkMode = true;
+  }
+}
+
+// ─── SEARCH ───
+function onSearch(val) {
+  const clearBtn = document.getElementById('clear-btn');
+  clearBtn.classList.toggle('visible', val.length > 0);
+
+  if (val.length < 2) {
+    hideSuggestions();
+    return;
+  }
+  const results = searchAirports(val);
+  showSuggestions(results);
+}
+
+function searchAirports(query) {
+  const q = query.toLowerCase().trim();
+  return AIRPORTS.filter(a =>
+    a.name.toLowerCase().includes(q) ||
+    a.city.toLowerCase().includes(q) ||
+    a.iata.toLowerCase().includes(q) ||
+    a.icao.toLowerCase().includes(q) ||
+    a.country.toLowerCase().includes(q)
+  ).slice(0, 8);
+}
+
+function showSuggestions(results) {
+  const box = document.getElementById('suggestions');
+  selectedIndex = -1;
+  currentSuggestions = results;
+
+  if (results.length === 0) {
+    box.innerHTML = '<div class="no-results">No airports found. Try a different name.</div>';
+    box.classList.add('visible');
+    return;
+  }
+
+  box.innerHTML = results.map((a, i) => `
+    <div class="suggestion-item" role="option" data-index="${i}"
+         onclick="selectAirport('${a.iata}')"
+         onmouseover="highlightItem(${i})">
+      <span class="suggestion-iata">${a.iata}</span>
+      <span class="suggestion-info">
+        <div class="suggestion-name">${a.name}</div>
+        <div class="suggestion-city">${a.city}</div>
+      </span>
+      <span class="suggestion-country">${a.country}</span>
+    </div>
+  `).join('');
+  box.classList.add('visible');
+}
+
+function hideSuggestions() {
+  document.getElementById('suggestions').classList.remove('visible');
+  currentSuggestions = [];
+  selectedIndex = -1;
+}
+
+function highlightItem(index) {
+  const items = document.querySelectorAll('.suggestion-item');
+  items.forEach((el, i) => el.classList.toggle('selected', i === index));
+  selectedIndex = index;
+}
+
+function onSearchKey(e) {
+  const items = document.querySelectorAll('.suggestion-item');
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    selectedIndex = Math.min(selectedIndex + 1, currentSuggestions.length - 1);
+    items.forEach((el, i) => el.classList.toggle('selected', i === selectedIndex));
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    selectedIndex = Math.max(selectedIndex - 1, 0);
+    items.forEach((el, i) => el.classList.toggle('selected', i === selectedIndex));
+  } else if (e.key === 'Enter') {
+    if (selectedIndex >= 0 && currentSuggestions[selectedIndex]) {
+      selectAirport(currentSuggestions[selectedIndex].iata);
+    }
+  } else if (e.key === 'Escape') {
+    hideSuggestions();
+  }
+}
+
+function selectAirport(iata) {
+  openFlightRadar(iata.toLowerCase());
+  hideSuggestions();
+  document.getElementById('search-input').value = '';
+  document.getElementById('clear-btn').classList.remove('visible');
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('clear-btn').classList.remove('visible');
+  hideSuggestions();
+  document.getElementById('search-input').focus();
+}
+
+// ─── DIRECT INPUT ───
+function onDirectInput(val) {
+  const preview = document.getElementById('url-preview');
+  const error = document.getElementById('error-msg');
+  error.classList.remove('visible');
+
+  const clean = val.toUpperCase().replace(/[^A-Z]/g, '');
+  document.getElementById('direct-input').value = clean;
+
+  if (clean.length >= 3) {
+    const iata = resolveToIATA(clean);
+    if (iata) {
+      const url = `https://www.flightradar24.com/airport/${iata.toLowerCase()}`;
+      preview.innerHTML = `↗ <span>${url}</span>`;
+      preview.classList.add('visible');
+    } else {
+      preview.classList.remove('visible');
+    }
+  } else {
+    preview.classList.remove('visible');
+  }
+}
+
+function onDirectKey(e) {
+  if (e.key === 'Enter') goDirectCode();
+}
+
+function resolveToIATA(code) {
+  const up = code.toUpperCase();
+  // Try IATA first (3 letters)
+  const byIATA = AIRPORTS.find(a => a.iata === up);
+  if (byIATA) return byIATA.iata;
+  // Try ICAO (4 letters)
+  const byICAO = AIRPORTS.find(a => a.icao === up);
+  if (byICAO) return byICAO.iata;
+  // If 3-letter, trust it anyway (FlightRadar will handle unknown ones)
+  if (up.length === 3) return up;
+  return null;
+}
+
+function goDirectCode() {
+  const val = document.getElementById('direct-input').value.trim();
+  const error = document.getElementById('error-msg');
+  const preview = document.getElementById('url-preview');
+
+  if (val.length < 3) {
+    error.classList.add('visible');
+    return;
+  }
+
+  const iata = resolveToIATA(val);
+  if (!iata) {
+    error.classList.add('visible');
+    preview.classList.remove('visible');
+    return;
+  }
+
+  error.classList.remove('visible');
+  openFlightRadar(iata.toLowerCase());
+  document.getElementById('direct-input').value = '';
+  document.getElementById('url-preview').classList.remove('visible');
+}
+
+// ─── OPEN FLIGHTRADAR ───
+function openFlightRadar(iata) {
+  const url = `https://www.flightradar24.com/airport/${iata}`;
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+</script>
+</body>
+</html>
