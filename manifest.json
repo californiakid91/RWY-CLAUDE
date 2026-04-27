@@ -2,7 +2,7 @@
   "name": "RWY CLAUDE",
   "short_name": "RWY CLAUDE",
   "description": "Airport finder for FlightRadar24 - Europe & Morocco",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#1a1f2e",
   "theme_color": "#1a1f2e",
